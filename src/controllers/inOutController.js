@@ -11,7 +11,8 @@ export async function getHistoric(req, res) {
             delete item.userId;
             delete item._id;
         });
-        const dados = { transaction: [...inOut], balance: saldo.balance, name: user.name };
+        const inOutReverse = inOut.reverse()
+        const dados = { transaction: [...inOutReverse], balance: saldo.balance, name: user.name };
         console.log(dados);
         res.send(dados);
     } catch (err) {
@@ -60,7 +61,7 @@ export async function Out(req, res) {
     }
     const value = parseFloat(body.value);
     try {
-        await db.collection("inOut").insertOne({ ...body, type: "out", userId: user._id });
+        await db.collection("inOut").insertOne({ ...body, type: "out", userId: user._id, date: dayjs().format('DD/MM') });
         const saldo = await db.collection("balance").findOne({ email: user.email });
         await db.collection("balance").updateOne({ email: user.email }, { $set: { balance: saldo.balance - value } });
         res.sendStatus(201);
