@@ -24,6 +24,7 @@ export async function signUp(req, res) {
         const senhaCriptografada = bcrypt.hashSync(body.password, 10);
 
         await db.collection("users").insertOne({ ...body, password: senhaCriptografada });
+        await db.collection("balance").insertOne({ email: body.email, balance: 0 });
         res.sendStatus(201);
     } catch (error) {
         console.log(error);
